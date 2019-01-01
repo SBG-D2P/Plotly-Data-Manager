@@ -8,35 +8,39 @@ import minimalmodbus
 import datetime
 import serial
 
-Temperature = 0
-Humidity = 0
-CurrentTime = 0
-Hour = 17
+class Measurements:
+    def __init__(self, Temperature, Humidity, CurrentTime, Hour):
+        self.Temperature = Temperature
+        self.Humidity = Humidity
+        self.CurrentTime = CurrentTime
+        self.Hour = Hour
 
-def SBG_DHT(T, H, CT, Hr):
+room = Measurements(0,0,0,18)
+
+def SBG_DHT(room):
     
-    CT = datetime.datetime.now()
-    #print(CurrentTime)
+    room.CurrentTime = datetime.datetime.now()
 
-    if CT.hour >= Hr  and Hr < 24:
-        print(CT.hour)
-        print(Hr)
+    if room.CurrentTime.hour >= room.Hour  and room.Hour < 24:
+        print(room.CurrentTime.hour)
+        print(room.Hour)
         sensor = Adafruit_DHT.DHT22
         pin = 4
-        H, T = Adafruit_DHT.read_retry(sensor, pin) #get temperature
-        print("\033[1;31;40m \n", 'Temp={0:0.1f}*C'.format(T))
-        print("\033[1;35;40m \n", 'humidity={0:0.1f}%'.format(H))
-        global Hour
-        Hour += 1
+        room.Humidity, room.Temperature = Adafruit_DHT.read_retry(sensor, pin) #get temperature
+        #print("\033[1;31;40m \n", 'Temp={0:0.1f}*C'.format(room.Temperature))
+        #print("\033[1;35;40m \n", 'humidity={0:0.1f}%'.format(room.Humidity))
+        room.Hour += 1
 
-    elif CT.hour < Hour  and Hr < 24:
+    elif room.CurrentTime.hour < Hour  and room.Hour < 24:
         pass #do nothing
     
-    elif Hr >= 24:
-        Hr = 0
+    elif room.Hour >= 24:
+        room.Hour = 0 #reset time to 0h format
+
+#----------------------------------------------------------------------------------------------
 
 while True:
-    SBG_DHT(Temperature, Humidity, CurrentTime, Hour)
+    SBG_DHT(room)
     time.sleep(5)
 
 class Data:
@@ -64,5 +68,9 @@ class Data:
         self.Moisture13 = Moisture13
         self.Moisture14 = Moisture14
         self.Moisture15 = Moisture15
-        
-        
+
+
+
+            
+
+
